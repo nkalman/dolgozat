@@ -1,0 +1,113 @@
+
+
+\chapter{Az algoritmus felépítése, megvalósítás lépései}\label{ch:MEGVALO}
+
+
+\section{Felhasznált technológiák}\label{sec:MEGVALO:ft}
+
+
+Az algoritmus implementálásához a Java programozási nyelvet választottuk, míg a képelemzõ algoritmusok használatához az OpenCV nyílt forráskódú könyvtárat. Ez a könyvtárcsomag teljesen szabadon felhasználható. Az OpenCV használatára azért esett a választás, mivel ez az alapvetõ képfeldolgozási algoritmusokat magába foglalja, nagyon gyors és hatékony megoldásokat biztosítva. Alkalmazásunk sok számítást kell végezzen, ezért szükségeltetett a performanciát szem elõtt tartani. Bár a könyvtárcsomagot eredetileg C/C++ -ban írták, készítettek hozzá úgynevezett wrappereket, melyek segítségével más nyelvekben is használható, többek között Java-ban is.
+
+
+Algoritmusunk három fõ részre bontható: az elsõ a képen található elemek azonosítása; a második az esztétika számszerûsítése, a szabályoknak megfelelõ metrikák implementációja; a harmadik pedig a legesztétikusabb képrészlet megtalálása. 
+
+
+\section{Elemek detektálása}\label{sec:MEGVALO:ft}
+
+A képen található elemek azonosítása a célobjektumok, arcok, illetve vonalak detektálását takarja. Ezekre szükségünk van a második lépésnél, az esztétika számszerûsítésénél. Az elemek azonosítása a legidõigényesebb, ezért ezt a lépést az elemzés során célszerû csak egyszer elvégezni. Az azonosított objektumokat és vonalakat listákban tároljuk, hogy az elemzés során ezt bármikor használni tudjuk.
+
+\subsection{Célobjektumok azonosítása}
+
+
+A célobjektumok azonosításában elsõ lépésként kissé össze kellett mosnunk a képet, ezáltal a felesleges élektõl megszabadulni, míg a fontosakat hangsúlyosabbá tenni. Erre a célra a piramis átlagoló szûrõt [10] alkalmaztuk. Az algoritmus egy maxlevel+1 szintet tartalmazó Gauss piramist épít, az összemosó algoritmust mindig a kisebb szinteken alkalmazva elõször, majd az eredményeket átadva a magasabb szinteknek. Itt újból alkalmazva van az összemosás, de csak azon pixelekre, melyek adott határnál jobban eltérnek a nekik megfelelõ alacsonyabb szintû pixelektõl. Ez a színes területek körvonalait élesebbé teszi, a kevésbé hangsúlyos éleket pedig teljesen eltünteti. Az algoritmus paramétereit próbáltuk úgy beállítani, hogy a leginkább helyes eredményt adja: az adott pixel körüli vizsgálandó pixelek számát a kép területének 3\%-val tettük egyenlõvé, a pixelérték küszöböt 100-ra, míg a piramis szintjeinek számát 2-re állítottuk. 
+
+
+	Következõ lépésben a képet fekete-fehérré alakítottuk, majd adaptív küszöbértéket (adaptive threshold) \cite{Threshold}  alkalmazva 0 és 1 közé szorítottuk a pixelek értékét. Mivel a kép különbözõ pontjai más-más megvilágításban lehetnek, nem lenne célravezetõ egy globális küszöbértéket használni. Ezért esett a választás az adaptive threshold alkalmazására, ahol kisebb régióknak saját küszöbértéket számolunk, így különbözõ helyeken más-más küszöbértékkel dolgozunk, mely a fényviszonyoktól függetlenül jobb eredményeket ad. 
+	
+	
+	Ezután az élek felfedezése következik. Erre a lépésre a legalkalmasabbnak a Canny-féle éldetektálás \cite{Canny} bizonyult. Ez egy sor algoritmusnak az alkalmazása, mely magába foglalja a kép összemosását, a zavarok kiszûrését, konvolúciós maszk alkalmazását, a nem éleket képezõ pixelek kiszûrését, illetve utolsó lépésként, két küszöbérték alkalmazását : ha az alsónál kisebb értékûek a pixelek, akkor nem képeznek élt, ha a felsõnél nagyobbak, akkor élt képeznek, illetve ha a kettõ között vannak, csak akkor képeznek élt, ha van olyan szomszédos pixelük, mely élhez tartozik. Észrevehetõ, hogy a kezdetekkor már alkalmaztunk egy összemosást és a Canny-féle algoritmusban is található egy. Azért volt szükséges egy összemosást alkalmazni elõre, mivel a Canny algoritmusban nincs megadva a választás lehetõsége: Gauss-féle összemosást használ \cite{Canny86}, nekünk azonban a piramis átlagoló a megfelelõbb. E lépés eredményeképp a kimeneti kép már csak a kontúrokat tartalmazza.
+	
+	
+	Ezután már csak külön kellett választani ezen kontúrokat egy pontok halmazát tartalmazó listába, és az adott ponthalmazok egy-egy téglalapba helyezhetõek. Ez még nem jelenti az algoritmus végét, ugyanis az így kapott eredményben egy objektumot több kisebb résztéglalap reprezentálhat. Ezt célszerû volna egy téglalapba tömöríteni. Az egyetlen hátramaradt lépés tehát az egymást metszõ vagy átfedõ téglalapok egyesítése volt. Az így kapott nagyobb területû téglalapok már a célobjektumokat reprezentálják. 
+	
+	
+	A kép színkombinációjából adóthat olyan probléma, hogy az emberi arc nem lesz célobjektumként azonosítva. Ez probléma, ugyanis az emberi arcok fontos szerepet játszanak a képeken. Annak érdekében, hogy az emberi arcok mindenképp bekerüljenek a célobjektumok közé, az eredeti képen alkalmaztuk az OpenCV által kínált arcfelismerést, így az már nem fordulhat elõ, hogy az arcok kimaradnak a célobjektumok listájából.
+	
+	
+\subsection{Vonalak azonosítása}
+
+A vonalak azonosítása esetén nincs szükség a kép nagy mértékû összemosására. Itt fontosak az eredeti élek, kockázatos volna eltüntetni egyes éleket, hiszen ezzel akár fontos vonalakat is elveszíthetnénk. A vonalkeresõ algoritmusunk egy Canny-féle élkereséssel kezdõdik, ahol a kis és nagy küszöbérték rendre 100 és 200. 
+
+
+A megtalált élek közül a vonalakat egy valószínûségen alapuló Hough-féle vonaltranszformációval kapjuk meg. A Hough-féle transzformációban a vonalak polárkoordinátában vannak leírva. Így egy vonal a következõképpen adható meg: $y = (-\cos \theta / \sin \theta)x + (r/ \sin \theta)$ , ahonnan egyszerûen kifejezhetõ : $r = x\cos \theta + y \sin \theta$. Tehát egy $(x_0,y_0)$ ponton áthaladó egyenesek halmazát a $(r_\theta,\theta)$ párosok képezik.
+
+	
+Algoritmusunkban az $r=1$ pixel és a $\theta = 1^{\circ}$, illetve a vonalhoz szükséges minimális metszéspontok száma, a minimális vonalhossz és a maximális vonal közti szakadás a fénykép méreteitõl függ. A minimális metszéspontok számának a szélesség és magasság minimumának a 10\% -át vettük, a minimális vonalhosszt az átlónak 25\% -a, illetve a maximális vonal közti szakadást az átlónak 4\% -a képezi. A Hough-féle vonaldetektálás az elõbb említett paramétereket használva egy vonallistát ad eredményül. Ez azonban egyes képeknél igen sok, felesleges vonalat is tartalmaz. Éppen ezért a talált vonalaknak csak kis százalékával foglalkoztunk. Kiválasztottunk maximálisan 6 darab legértékesebb vonalat. Egy vonal annál értékesebbnek számít, minél nagyobb a hossza.
+
+
+A átlódominancia szabály vizsgálatához külön számon kellett tartanunk az átlóközeli vonalakat is. Ennek érdekében kiszámoltuk az átlók szögét, és a kapott vonallistából kerestük azon vonalakat, melyek ezekhez viszonyítva egy bizonyos küszöbön belül helyezkednek el. Ezt a küszöbértéket $10^{\circ}$-ra állítottuk be. Sorra ellenõrizve a vonalakat, a határon belül esõket hozzáadtuk az átlókat tartalmazó listához. 
+
+
+\section{Az esztétikai érték kiszámítása}\label{sec:MEGVALO:ae}
+
+
+Az adott kép esztétikai értékének kiszámításához a fentebb említett metrikákat szükséges implementálni. Az algoritmusunk során nem csupán az eredeti, teljes nagyságú képnek kellett kiszámítani az esztétikai értékét, hanem a javasolt képrészletnek is. Felmerül tehát a kérdés, hogy minden ilyen képrészletre érdemes-e újból megkeresni a célobjektumokat és vonalakat.  Performancia szempontjából semmiképp sem. Az objektumok megkeresése idõigényes folyamat, ezért nem lenne célravezetõ minden alkalommal újból es újból azonosítani ezeket. Pontosan ezért volt hasznos az elõzõ lépésekben minden megtalált objektumot listákba elmenteni. Ilyen módon ezeket a késõbbiek során bármikor hasznosítani lehet. 
+
+
+	Egy képrészlet esetén elõfordulhat, hogy bizonyos objektumok vagy vonalak teljesen, vagy csak részben kiesnek a keretbõl. Ilyen esetben nem dolgozhatunk az eredeti objektumlistával. Az ilyen célobjektumok esetén meg kell keresnünk azt a téglalapot, mely a célobjektum és a keret metszete, ez lesz az aktuális képrészletben használt objektum. Ha egy adott objektum teljesen a kereten kívülre esik, azt nem vesszük számításba az adott értékszámolásban. A kilógó vonalak esetén hasonlóképpen járunk el. Az a vonalrészlet lesz az aktuálisan használt vonal, mely belóg a képbe, vagy adott esetben, ha a vonal teljesen a kereten kívül esik, akkor ezt nem használjuk az értékszámolásban. Egy másik opció az lett volna, hogy ha egy objektum bizonyos része kiesik a keretbõl, akkor az a keret érvénytelennek tekintett legyen, vagy az adott objektumot ne tekintsül célobjektumnak. Ezt a lehetõséget azonban elvetettük, ugyanis megfigyeltük, hogy egy kép lehet esztétikusabb, mûvészibb akkor, ha az adott objektumnak csak egy része található az aktuális keretben. 
+	
+	
+\section{A legesztétikusabb képrészlet meghatározása}\label{sec:MEGVALO:ek}
+
+
+A dolgozatban tárgyalt algoritmus utolsó lépését a legesztétikusabb képrészlet meghatározása képezi. Ezt a képoptimalizációs lépést keresési algoritmussal valósítjuk meg. Egy kép azonban nagyon sok lehetséges részképpel rendelkezhet. Egy ilyen lehetséges képrészletet 4 paraméterrel írhatunk le: a képrészlet bal felsõ sarkának x és y koordinátája, illetve a képrészélet szélessége és hosszúsága, $(x_i,y_i,w_i,h_i)$, ahogyan azt a \ref{fig:params}  ábra is mutatja. 
+
+\begin{figure}[H]
+\centering  
+\caption[params]
+  {A képrészlet paraméterei}
+  \label{fig:params}
+\pgfimage[height=6cm]{kepek/leadcropping}
+\end{figure}
+
+
+Egy kép esetén tehát  $x_i \in [0, w], y_i \in [0,h], w_i \in [0,w] $ és $h_i \in [0,h]$  intervallumok jöhetnek szóba, ami nagyon nagy számú lehetséges kombinációt adna. Ez egy $480 x 320$-as kép esetén, ami nem számít nagy felbontásúnak, $480^2 * 32^2 \approx 32 milliárd$ volna. Ez nagyon hosszú idõt venne igénybe, ugyanis ennyiszer kellene az értékelõ algoritmust végrehajtani. 
+
+
+A képoptimalizációs algoritmus elsõ lépéseként tehát csökkentenünk kellett a lehetséges esetek számát. Ezt a legegyszerûbben az intervallumok méretének csökkentésével érhetjük el. A kép minõségének megõrzése is fontos szempont, ezért a képet legfeljebb az eredeti területének negyedére csökkentjük. Ez nagyon kis felbontású képek esetén már kellemetlen hatást okozhat, azonban algoritmusunkban feltételezzük a nagy felbontású képek használatát. Az algoritmusban használt intervallumok ennek megfelelõen a következõképpen változnak : $x_i \in [0, w/2]$, $y_i \in [0, h/2]$  illetve $w_i \in [w/2, w]$. Szintén segítségünkre válhat az, ha megtartjuk a kép eredeti arányait. Ennek megfelelõen elegendõ a kép szélességét és a szélesség/hosszúság arányt ismernünk, ebbõl ugyanis egyszerûen kiszámítható a hosszúság. 
+
+
+Az intervallumok csökkentésével a lehetséges kombinációk számát is nagyon lefaragtuk, azonban ez még mindig nem elég. A lehetséges részképek száma még mindig túl nagy ahhoz, hogy ezeknek sorra kiszámoljuk az esztétikai értékét. Szükség van tehát egy olyan, eléggé gyors módszerre, mely megoldja az optimizációs problémánkat. Erre legalkalmasabbnak a genetikus algoritmus használatát találtuk. 
+
+
+	A genetikus algoritmusok olyan keresõalgoritmusok, melyek a genetikára és a természetes szelekcióra épülnek. Általában optimális vagy az optimálishoz közel álló megoldások megtalálására használják, olyan problémák esetén melyeket nagyon hosszú idõbe telne megoldani a hagyományos programozási algoritmusokkal. Az optimizációs problémák esetén az a kihívás, hogy megtaláljuk azon bemeneti értékeket, melyre a legjobb étéket kapjuk \cite{Luo11}. Esetünkben keressük azon $(x_i,y_i,w_i)$ számhármast, mely a legnagyobb esztétikai értékkel rendelkezik. Ez a számhármas reprezentál tehát egy egyedet. Ilyen egyedekbõl építjük fel a populációt, ezen hajtjuk végre a genetikus algoritmus függvényeit: a kiválasztást, a keresztezést és a mutációt. 
+	
+	
+	A genetikus algoritmusok problémáról problémára változhatnak, de a következõ részeket mindig tartalmazniuk kell: inicializáció, szelekció, szaporítás és leállás. Az inicializáció során a kezdeti populációt generáljuk. Ennek mérete feladattól függõen változó. Általában a egyedek a keresési téren belül egyenletesen oszlanak el. Néha hasznosabb a jónak vélt egyedekkel inicializálni a kezdeti populációt, ez viszont a globális helyett lokális optimum megtalálásához vezethet \cite{Michalewicz92}.
+	
+	
+	Minden generációban az egyedek egy része kiválasztásra kerül. Ezek általában a fitnesz függvény értéke szerint lesznek kiválasztva. Bizonyos genetikus algoritmus változatokban minden egyed kiértékelésre kerül, s a legjobb értékûek lesznek szelektálva. Ez a teljes folyamat azonban túlságosan hosszú lehet, így elõnyössé válik a véletlen egyed kiválasztása. 
+	
+	
+	Az újabb egyedek bevezetése keresztezõdéssel, illetve mutáció mûvelettel lehetséges. A keresztezõdés esetén két meglévõ egyedbõl hozunk létre egy újat, míg a mutáció esetén egy egyedet módosítva kapunk újabbat. 
+	
+	
+	Végül, a genetikus algoritmusok egy leállási feltétel teljesüléséig futnak. Ez a feltétel lehet egy elõre rögzített maximális generációszám, illetve a maximális fitneszérték elérése. 
+	
+	
+\subsection{A genetikus algoritmus paraméterei}
+
+Algoritmusunkban a kezdõpopuláció létszámának 200-at választottunk, hogy minél nagyobb valószínûséggel kapjuk már elsõ körben egy, az eredetinél nagyobb esztétikai értékkel rendelkezõ képet, illetve hogy minél változatosabb legyen a kezdeti populációnk. Az algoritmus evolúciójának leállási feltételének 500 generációt állítottunk be. Természetesen az algoritmus akkor is leállási ponthoz érkezne, ha megtalálná a maximálisan esztétikus képet, amelynek értéke 1.0  lenne. Kísérletek elvégzése után, illetve figyelembe véve, hogy nincs olyan kép mely minden szabálynak tökéletesen megfelelne, biztosan elmondható, hogy egy kép esetén sem fogunk maximális értéket kapni. Éppen ezért volt szükséges egy leállási feltételnek megfelelõ maximális generációszámot megadnunk. 
+
+
+	A genetikus algoritmusban bajnokság (tournament) szelekciót alkalmaztunk. Ez a szülõk megválasztási módja. Szülõválasztáskor tehát véletlenszerûen kiválasztunk 20 darab egyedet, ezek közül megkeressük a legnagyobb esztétikai értékkel rendelkezõt, ez lesz az egyik szülõ. A másik szülõ választásánál is hasonlóképpen járunk el. E két szülõt megfelelõen keresztezzük : mindhárom gén, tulajdonság esetén (x, y és szélesség) generálunk egy számot. Ha ez a szám kisebb mint a 0.5 - ös küszöbérték, akkor az elsõ, különben a második egyed tulajdonságát örökli meg a gyermek.  Ha a generálás során a kapott keret kilógna a képbõl, akkor addig választjuk újra a szülõket, majd keresztezzük, amíg a kapott keret teljesen az eredeti képen belül nem lesz. 
+	
+	
+	A mutáció során hasonlóképpen járunk el. Véletlenszerûen választunk egy értéket. Ha ez kisebb mint a mutációs küszöbhatár, akkor a megfelelõ gént újrageneráljuk. Ha a kapott mutált egyed nem található a képen belül, akkor addig generáljuk újra, míg olyan keretet nem kapunk, mely teljesen az eredeti képen belül helyezkedik el. Az általunk használt küszöbhatár 0.3. A mutáció beépítése azért fontos, hogy elkerüljük a lokális optimumok megtalálását, célunk ugyanis az összes lehetõség közül a legjobbat, azaz a globális optimumot megtalálni.
+	
+	
+	Fontos megemlíteni, hogy a genetikus algoritmusban elitista szelekciót alkalmaztunk tehát elõnyben részesítettük az eliteket, azon egyedeket, melyek nagy esztétikai értékkel rendelkeznek. Minden generációban kiválasztottuk tehát a legesztétikusabb részképet, majd elsõ lépésként ezt hozzá is adtuk a következõ generáció egyedeihez. 
+	Ezen módszerrel elérve a maximális generációszámot és kiválasztva a legesztétikusabb képrészletet, ha nem is a legoptimálisabb, de jelentõsen jó megoldást kaptunk viszonylagosan rövid idõ alatt.
+
+
+

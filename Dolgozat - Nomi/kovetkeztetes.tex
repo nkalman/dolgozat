@@ -1,0 +1,13 @@
+
+\chapter{Következtetések, továbbfejlesztési lehetõségek}\label{ch:KOV}
+
+Dolgozatunk jelen állapotában egy olyan algoritmust ír le, mely képes egy bemeneti képen azonosítani a kiemelkedõ területeket és vonalakat, ezek felhasználásával esztétikai értéket számolni, illetve az adott képnek egy olyan részképét eredményül adni, mely optimális értékkel rendelkezik. Segítséget nyújt tehát az amatõr fényképészeknek a sikeresebb, esztétikusabb képek készítésében. Az eredményesebb felhasználás érdekében érdemes néhány továbbfejlesztési lehetõséget figyelembe venni. 
+
+
+	Annak ellenére, hogy az algoritmus jelen állapotában sem nevezhetõ lassúnak, érdemes volna a számítások gyorsítására törekedni. A dolgozat elsõdleges továbbfejlesztési lehetõségei közé sorolható tehát a performancia javítása. Mivel az algoritmus elég idõigényes képfeldolgozási számításokat igényel, illetve az esztétikai értéket is több ezerszer számítjuk ki a genetikus algoritmusban, ezeket jó volna a lehetõ legrövidebb idõ alatt elvégezni. Az objektumok, illetve vonalak azonosítását külön szálon futtatva, illetve az esztétikai értékszámolásban is párhuzamosítást alkalmazva csökkenthetõ volna az algoritmus futási ideje. 
+	
+	
+	Szintén az algoritmus gyorsítását szolgálná a genetikus algoritmus továbbfejlesztése. Érdemes volna tehát különbözõ típusú genetikus algoritmusokat kipróbálni, közben figyelni arra, hogy milyen típusú genetikus operátorok esetén kapunk gyorsabb, vagy adott esetben jobb eredményt. 
+	
+	
+	Egy másik továbbfejlesztési lehetõségként megemlíthetõ egyéb kompozíciós szabályok bevezetése. Minél több szabályt sikerül beépíteni, annál pontosabban lehetne esztétikai értéket számolni. Ehhez azonban olyan szabályokat kell találnunk, melyek jól együttmûködnek a már felhasználtakkal. A megfelelõ szabályok megtalálása kihívást jelenthet. Érdemes volna tehát olyan szabályok és mérési metrikáik után nézni, melyek növelnék a kép esztétikai megítélésének helyességét.

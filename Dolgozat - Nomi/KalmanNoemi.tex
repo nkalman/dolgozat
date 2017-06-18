@@ -1,0 +1,99 @@
+
+\documentclass[final]{ubb_dolgozat}
+\usepackage{definitions}
+\usepackage{float}
+
+\submityear{
+2017
+}
+
+\submitmonthHU{%
+Július
+}
+
+\submitmonthRO{%
+Iulie
+}
+
+\submitmonthEN{%
+July
+}
+
+\titleHU{
+Intelligens képelemzés kompozíciós szabályok alapján
+}
+
+\titleRO{
+Analizarea inteligantã a fotografiilor dupã reguli de compoziþie
+}
+
+\titleEN{
+Intelligent photo analyzer by composition rules
+}
+
+\author{
+Kálmán Noémi-Ildikó
+}
+
+\tutorHU{
+dr. Bodó Zalán,\newline egyetemi adjunktus\\
+}
+\tutorRO{
+Lector dr. Bodó Zalán\\
+}
+\tutorEN{
+Assist prof. dr.  Bodó Zalán
+}
+
+\begin{document}
+
+\begin{abstractEN}
+
+%(HU)
+%Az egyre performánsabb kamerákkal ellátott okostelefonok széles körû elterjedésével hajlamosak vagyunk életünk minden pillanatát megörökíteni. Azonban a jó minõség még nem biztosítja a kép mûvészi értékét is. Az esztétikus képek készítésében fontos szerepet játszik a kompozíciós szabályok betartása.
+%A dolgozat célja tehát egy olyan módszer kidolgozása, mely egy bemeneti képbõl egy, a kompozíciós szabályokat jobban betartó képrészletet ad. Elsõ lépésben azonosítjuk a kiemelkedõ területeket és fõ vonalakat, majd ezeknek a relatív pozícióját változtatva próbáljuk a lehetõ legmagasabb esztétikai értékkel rendelkezõ képrészletet meghatározni és kivágni.
+
+%(EN)
+
+Nowadays the smart phones have more and more professional cameras. This is the reason why we are disposed to record every moment of our life. But the good quality of these photos doesn't guarantee a high artistic value. It is fundamental to follow some composition rules in order to take aesthetic photos.
+
+The purpose of this paper is to present a method that takes an input photo and crops out a smaller region that follows the composition rules. Firstly, we detect the salient regions and the leading lines, then we calculate the aesthetic score of the photo based on composition rules. Finally, changing the realtive position of these objects we try to find and crop the most aesthetic section of this photo. The paper also presents an Android phone application, that uses this method to improve the aesthetic value of the photos. 
+
+
+This work is the result of my own activity. I have neither given nor received unauthorized assistance on this work.
+
+\end{abstractEN}
+
+\maketitle
+
+
+% a dolgozat tartalomjegyzeke
+{ \baselineskip 1ex
+  \parskip 1ex
+  \tableofcontents
+}
+
+\include{bevezeto}
+
+\include{szabalyok}
+
+\include{beepitett}
+
+\include{megvalositas}
+
+\include{alkalmazas}
+
+\include{esettan}
+
+\include{kovetkeztetes}
+
+%\include{tovabb}
+
+{ \renewcommand{\baselinestretch}{0.8}\normalsize %
+  \setlength{\itemsep}{-2.4mm}
+  \setlength{\bibspacing}{0.67\baselineskip}
+  \bibliographystyle{abbrvnat_hu}
+  \bibliography{biblio}
+}
+
+\end{document}

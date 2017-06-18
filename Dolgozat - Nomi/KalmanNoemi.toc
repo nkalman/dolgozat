@@ -1,0 +1,18 @@
+\select@language {magyar} \contentsline {chapter}{\numberline {1}Bevezet\H {o}}{3}{chapter.1}
+\select@language {magyar} \contentsline {chapter}{\numberline {2}Kompoz\IeC {\'\i }ci\'os szab\'alyok}{4}{chapter.2}
+\select@language {magyar} \contentsline {chapter}{\numberline {3}Be\'ep\IeC {\'\i }tett szab\'alyok alkalmaz\'asa}{6}{chapter.3}
+\select@language {magyar} \contentsline {chapter}{\numberline {4}Az algoritmus fel\'ep\IeC {\'\i }t\'ese, megval\'os\IeC {\'\i }t\'as l\'ep\'esei}{11}{chapter.4}
+\select@language {magyar} \contentsline {section}{\numberline {4.1}Felhaszn\'alt technol\'ogi\'ak}{11}{section.4.1}
+\select@language {magyar} \contentsline {section}{\numberline {4.2}Elemek detekt\'al\'asa}{11}{section.4.2}
+\select@language {magyar} \contentsline {subsection}{\numberline {4.2.1}C\'elobjektumok azonos\IeC {\'\i }t\'asa}{11}{subsection.4.2.1}
+\select@language {magyar} \contentsline {subsection}{\numberline {4.2.2}Vonalak azonos\IeC {\'\i }t\'asa}{12}{subsection.4.2.2}
+\select@language {magyar} \contentsline {section}{\numberline {4.3}Az eszt\'etikai \'ert\'ek kisz\'am\IeC {\'\i }t\'asa}{13}{section.4.3}
+\select@language {magyar} \contentsline {section}{\numberline {4.4}A legeszt\'etikusabb k\'epr\'eszlet meghat\'aroz\'asa}{13}{section.4.4}
+\select@language {magyar} \contentsline {subsection}{\numberline {4.4.1}A genetikus algoritmus param\'eterei}{15}{subsection.4.4.1}
+\select@language {magyar} \contentsline {chapter}{\numberline {5}Az alkalmaz\'as fel\'ep\IeC {\'\i }t\'ese}{17}{chapter.5}
+\select@language {magyar} \contentsline {section}{\numberline {5.1}Szerkezete}{17}{section.5.1}
+\select@language {magyar} \contentsline {section}{\numberline {5.2}Felhaszn\'alt technol\'ogi\'ak}{17}{section.5.2}
+\select@language {magyar} \contentsline {section}{\numberline {5.3}Az Android kliens bemutat\'asa}{18}{section.5.3}
+\select@language {magyar} \contentsline {section}{\numberline {5.4}A szerver bemutat\'asa}{20}{section.5.4}
+\select@language {magyar} \contentsline {chapter}{\numberline {6}5. Esettanulm\'anyok, \'eszrev\'etelek}{22}{chapter.6}
+\select@language {magyar} \contentsline {chapter}{\numberline {7}K\"ovetkeztet\'esek, tov\'abbfejleszt\'esi lehet\H os\'egek}{29}{chapter.7}

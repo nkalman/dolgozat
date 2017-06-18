@@ -1,0 +1,182 @@
+
+\chapter{5.	Esettanulmányok, észrevételek}\label{ch:ESET}
+
+A következõkben néhány konkrét eseten keresztül mutatjuk be az algoritmusunk mûködését, felhívva a figyelmet az algoritmus tulajdonságaira. Példáinkon keresztül bemutatjuk az objektumok azonosításának lépéseit, a szabályokat képviselõ függvények értékeit, illetve a bemeneti és eredményül kapott képet is.  Az elsõ esettanulmány lépései: 
+ 
+
+\begin{figure}[H]
+\centering
+\caption[eredeti]
+  {A bemeneti kép}
+   \label{fig:eredeti}
+\pgfimage[height=6cm]{kepek/lead}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\caption[meanshift]
+  {Az összemosott kép}
+   \label{fig:meanshift}
+\pgfimage[height=6cm]{kepek/lead-mos}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\caption[thresh]
+  {A kép threshold alkalmazás után}
+   \label{fig:thresh}
+\pgfimage[height=6cm]{kepek/lead-threshold}
+\end{figure}
+
+Az ábra az algoritmus különbözõ fázisaiban mutatja be a bemeneti a képet. A \ref{fig:meanshift} ábra a kezdeti összemosás utáni állapotot örökíti meg, látszik, hogy a felesleges élek teljesen eltûntek, csak a zsiráf mentén maradtak meg láthatóak. A \ref{fig:thresh} ábra a fennmaradt éleket mutatja, ez alapján lettek azonosítva a \ref{fig:obj}. ábrán bekeretezett objektumok. A következõ, \ref{fig:thresh2} ábra az összemosás nélkül alkalmazott thresholdolást mutatja, itt látható, hogy sokkal több él megmaradt, amire szükségünk is van a vonalak azonosításához. Végül az utolsó, \ref{fig:vonal} ábrán a megtalált vonalak vannak feltüntetve. Bár az elõzõ, \ref{fig:thresh2}  kép azt a látszatot kelti, hogy sokkal több vonal fedezhetõ fel, mégsincs sok vonal azonosítva. Ez annak köszönhetõ, hogy a többi vonaljelölt vagy túlságosan rövidnek bizonyult, vagy túl nagy szakadások darabolták fel õket.
+
+\begin{figure}[H]
+\centering
+\caption[obj]
+  {A kép a detektált célobjektumokkal}
+   \label{fig:obj}
+\pgfimage[height=6cm]{kepek/lead-obj}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\caption[thresh2]
+  {Simán thresholdolt kép}
+   \label{fig:thresh2}
+\pgfimage[height=6cm]{kepek/lead-thresh2}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\caption[vonal]
+  {A detektált vonalak}
+   \label{fig:vonal}
+\pgfimage[height=6cm]{kepek/lead-vonal}û
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\caption[crop]
+  {eredményül kapott, optimalizált kép}
+   \label{fig:crop}
+\pgfimage[height=6cm]{kepek/lead-cropped}
+\end{figure}
+
+
+A kezdeti kép esztétikai értéke 0.666046 volt, ami azt jelenti, hogy a kép megközelítõleg 66\% - ban tartotta be a kompozíciós szabályokat. Egész pontosan a harmadolás szabály értéke 0.770615, a vizuális egyensúlyé 0.421820, illetve az átlódominanciáé 0.947065 volt.
+
+
+Ez a kapott érték nem nevezhetõ jónak. Szükséges tehát az optimalizációs algoritmussal megkeresni azon képrészletet, mely maximális eredményt szolgáltat. Az algoritmus eredményeképpen egy olyan képrészletet kaptunk, melynek bal felsõ sarkát a (191, 123) pont képezi illetve szélessége 405, míg hosszúsága 270 pixel. Ennek a képnek az esztétikai értéke jelentõsen jobb, 0.954201, azaz megközelítõleg 95\% - os. Észrevehetõ, hogy mindhárom szabály értéke nõtt: a harmadolás szabály értéke 0.956310, a vizuális egyensúlyé 0.955622, illetve az átlódominanciáé 0.957842 lett.  Végül a \ref{fig:crop}. ábra mutatja a kapott eredményt.
+
+
+
+\begin{figure}[H]
+  \centering
+  \caption[zsufolt]%
+  {Túlzsúfolt képekre alkalmazva az algoritmust.\\
+  {\white .}\url{forrasokat betenni!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!}}
+  \label{fig:zsufolt}
+  \begin{tabular}{cccc}
+		  \pgfimage[width=5cm, height=4cm]{kepek/tree}
+		  &
+		  \pgfimage[width=5cm, height=4cm]{kepek/room}
+		   &
+		  \pgfimage[width=5.5cm, height=4cm]{kepek/group}
+	\end{tabular}
+\end{figure}
+
+
+Az algoritmus többszöri végrehajtása során észrevettük, hogy a túlzsúfolt, vagy túl közeli képek esetén a kép területének nagyon nagy százaléka a célobjektumot képezi. Ez annak köszönhetõ, hogy az algoritmus nagyon sok, összefüggõ élet talál. Az ilyen képek nem lehetnek igazán esztétikusak. Nem elõnyös ilyen túlzsúfolt képekre alkalmazni az algoritmust. A közeli képeket is érdemes elkerülni, ugyanis az algoritmus részlet kivágásával, azaz beközelítéssel próbálja feljavítani a képet, egy nagyon közeli kép esetén azonban már ezen nem lehet ilyen módszerrel optimalizálni.
+
+\begin{figure}[H]
+\centering
+\caption[arc]
+  {Arcok detektálása}
+   \label{fig:arc}
+\pgfimage[height=6cm]{kepek/group_faces}
+\end{figure}
+
+
+Az algoritmus fontos lépései, melyet a fent bemutatott esettanulmány keretein belül nem tudtunk demonstrálni: az arcdetektálás, illetve az átlóközeli vonalak azonosítása. Ahogyan a \ref{fig:arc} ábra is mutatja, az arcok nyilvántartása az objektumokéhoz teljesen hasonló módon történik: egy négyzetet rajzolhatunk az arc köré, ezen négyzeteket eltárolva kapjuk meg az arcok listáját. Az átlós vonalak azonosítása pedig a vonalak azonosításával egy idõben történik, annyi különbséggel, hogy ezen vonalakat külön listában tároljuk el, ahogyan ezt a \ref{fig:diaglines} ábra is mutatja. 
+
+\begin{figure}[H]
+  \centering
+   \caption[diaglines]
+  {Az eredeti kép, illetve az átlagos és átlóközeli vonalak, külön színnel jelölve.\\
+  {\white .}\url{forrasokat betenni!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!}}
+  \label{fig:diaglines}
+  \begin{tabular}{ccc}
+		  \pgfimage[width=8cm, height=5cm]{kepek/diagg}
+		  &
+		  \pgfimage[width=8cm, height=5cm]{kepek/diag_lines}
+	\end{tabular}
+\end{figure}
+
+
+
+	Egy másik fontos észrevétel, hogy a jó felépítésû, 0.8 feletti esztétikai értékkel rendelkezõ képek esetén az algoritmus hajlamos ezt az értéket optimálisnak elfogadni. Nem minden esetben találja meg az ennél optimálisabb értékeket. Látványos javítást 0.6-0.7 - nél kisebb esztétikai értékkel rendelkezõ képek esetén érhetünk el. 
+	
+	
+	Az algoritmus megírásában a legfõbb kihívást a megfelelõ képfeldolgozási paraméterek megtalálása jelentette. Jelen paraméterek mellett is elõfordulnak olyan képek, melyeken az algoritmus nem talál meg minden kiemelkedõ területet. Ez természetesen befolyásolja az esztétikai érték kiszámolását is. Azonban nem lehet általánosan mindenre jól mûködõ paramétereket találni. Minden kép egyedi a maga módján, így ami az egyik kép esetében nagyon jó paraméterhalmaz, az egy másik kép esetén nagyon rossznak bizonyulhat. Célunk tehát egy általánosan elég jól mûködõ paraméteregyüttes megtalálása volt. 
+	
+	
+\begin{figure}[H]
+  \centering
+  \caption[safari]%
+  {Az eredeti kép esztétikai értéke:  0.899226 , az optimalizált kép esztétikai értéke: 0.94805786 .\\
+  {\white .}\url{forrasokat betenni!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!}}
+  \label{fig:safari}
+  \begin{tabular}{ccc}
+		  \pgfimage[width=8cm, height=5cm]{kepek/safari}
+		  &
+		  \pgfimage[width=8cm, height=5cm]{kepek/safari-cropped}
+	\end{tabular}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \caption[dogs]%
+  {Az eredeti kép esztétikai értéke: 0.511398, az optimalizált kép esztétikai értéke: 0.861275 .\\
+  {\white .}\url{forrasokat betenni!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!}}
+  \label{fig:dogs}
+  \begin{tabular}{ccc}
+		  \pgfimage[width=8cm, height=5cm]{kepek/dogs}
+		  &
+		  \pgfimage[width=8cm, height=5cm]{kepek/dogs-cropped}
+	\end{tabular}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+   \caption[house]%
+  {Az eredeti kép esztétikai értéke:  0.919799 , az optimalizált kép esztétikai értéke: 0.930881 .\\
+  {\white .}\url{forrasokat betenni!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!}}
+  \label{fig:house}
+  \begin{tabular}{ccc}
+		  \pgfimage[width=8cm, height=5cm]{kepek/house}
+		  &
+		  \pgfimage[width=8cm, height=5cm]{kepek/house-cropped}
+	\end{tabular}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+   \caption[kangoo]%
+  {Az eredeti kép esztétikai értéke: 0.899165, az optimalizált kép esztétikai értéke: 0.921564 .\\
+  {\white .}\url{forrasokat betenni!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!}}
+  \label{fig:kangoo}
+  \begin{tabular}{ccc}
+		  \pgfimage[width=8cm, height=5cm]{kepek/kangoo}
+		  &
+		  \pgfimage[width=8cm, height=5cm]{kepek/kangoo-cropped}
+	\end{tabular}
+\end{figure}
+
+
+A fenti ábrán a baloldali képek az eredetiek, míg a jobboldali képek az általunk ajánlott optimalizált változataik. Mindegyik kép alatt fel van tüntetve az általunk kiszámított esztétikai érték is. Látható, hogy egyes képek esetén jelentõs optimalizációt sikerült elérnünk.  
+
+
+Az  általunk  használt  algoritmus  csak  a  szabályok  betartását  ellenõrzi,  nincs  beépítve semmilyen  szintû  kreativitás.  Ezért mindenki  eldöntheti,  hogy  a  kapott  képek  valóban esztétikusabbak-e. Az azonban biztos, hogy a vizsgált szabályokat jobban betartják.  
+
+
+

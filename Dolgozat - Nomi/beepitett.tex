@@ -1,0 +1,127 @@
+
+
+
+\chapter{Beépített szabályok alkalmazása}\label{ch:BEEPITETT}
+
+Ahhoz, hogy egy képnek számszerûsíteni lehessen az esztétikai értékét, fontos az elõbb említett szabályok közül néhányat kiválasztani. Mivel egyes szabályok ellentmondanak egymásnak, olyan szabálycsoportot kellett kiemelnünk ezen halmazból, melyek nem csak jól megférnek egymás mellett, de együttesen egy sokkal esztétikusabb, kellemesebb képet adnak. 
+
+
+A képek esztétikájának megfelelõ tükrözéséhez ezen kompozíciós szabályok közül hármat választottunk ki: a harmadolás szabályt, az átlók dominanciáját, illetve a vizuális egyensúlyt [6]. A harmadolás a legalapvetõbb szabály, minden sikeres mûalkotásban fellelhetõ az alkalmazása, ezért ez az általunk kiválasztott csoportba is bekerült. Az átlós vonalak megfelelõen irányítják a tekintetet, ezzel hatást gyakorolva az emberi érzékekre, a fõ célpontra terelik a figyelmet, így a nézõ nem érezheti semmitmondónak a képet. Emellett az emberi lélek igényli az egyensúlyt, így a képekben is hajlamos az egyensúlyt részesíteni elõnyben. A rendezetlen, túlzsúfolt, majd lappangó területeket tartalmazó képek zavart okozhatnak, a nézõ elveszítheti a kép mondandóját. Ezért esett a választás, az elõbb említett két szabály mellett, a vizuális egyensúly beépítésére is. 
+
+
+A fejezetben látható képek a felhasznált szabályokat mutatják be. Az \ref{fig:szabalyok}-es ábra elsõ képe a harmadolás szabályt reprezentálja. Jól látható, hogy a világítótorony a jobboldali harmadvonal mentén helyezkedik el, mindkét súlypontot magába foglalja. A \ref{fig:szabalyok}-es ábra második képén pedig a horizont az alsó harmadvonallal teljesen megegyezik. Az ábra bal alsó képe az átlódominanciát mutatja, ugyanis a lépcsõ szélei pontosan az átlót alkotják. Az utolsó, jobb alsó ábra pedig a vizuális egyensúly szabályát tartja be, a fák egyenlõ távolságra helyezkedve el a kép középpontjától.
+
+
+Ahhoz, hogy a kiválasztott szabályokat megfelelõen alkalmazni tudjuk a képértékelésben, bizonyos metrikákat kellett felhasználnunk. A céljainknak legmegfelelõbbnek az L. L. Renjie, C. L. Wolf és D. Cohen-Or által kidolgozott metrikák \cite{Liu10} bizonyultak. Kisebb változtatásokkal ezen metrikákat implementálva alakult ki az esztétikai értéket számszerûsítõ alkalmazás. 
+
+\begin{figure}[H]
+  \centering
+  \begin{tabular}{ccc}
+		  \pgfimage[width=8cm, height=5cm]{kepek/abra1}
+		  &
+		  \pgfimage[width=8cm, height=5cm]{kepek/abra2}
+	\end{tabular}
+	\begin{tabular}{ccc}
+		  \pgfimage[width=8cm, height=5cm]{kepek/abra3}
+		  &
+		  \pgfimage[width=8cm, height=5cm]{kepek/abra4}
+	\end{tabular}
+  \caption[szabalyok]%
+  {Az általunk felhasznált kompozíciós szabályok. A felsõ kettõ a harmadolás, a bal alsó az átlódominanciát, míg az utolsó a vizuális egyensúlyt mutatja be.\\
+  {\white .}\url{forrasokat betenni!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!}}
+  \label{fig:szabalyok}
+\end{figure}
+
+
+A képhez rendelt esztétikai értéket a célobjektumok és fõ vonalak pozíciója valamint térbeli felépítése alapján határoztuk meg. Ehhez azonban elõször azonosítanunk kellett ezen számottevõ objektumokat. A metrikák implementációját tehát a képen fellelhetõ objektumok detektálása kellett megelõzze, melyhez a jól ismert algoritmusokat alkalmaztuk.
+
+
+	A célobjektumok azonosításához elõbb egy sor képfeldolgozó algoritmust alkalmaztunk, mely megfelelõen összemossa a képet, ezzel eltüntetve a felesleges éleket, fekete fehérré alakítottuk, majd megfelelõ küszöbértéket alkalmazva 0 és 1 közé redukáltuk a pixelek értékeit. Ezután egy Canny operátort \cite{Canny} alkalmazva azonosítottuk a képen található fõ kontúrokat. Ha mindez megtörtént, a kontúrokat magukba foglaló téglalapok képezik a kép objektumait. Ez azonban igen sok bekeretezett elemet eredményez. Sok közülük egymással átfedésbe is kerülhet, ezáltal egy objektumot akár több téglalappal is lefedhetünk, ami felesleges. Ennek elkerülése érdekében az egymással átfedésben levõ téglalapokat egybeolvasztjuk, így kevesebb darab, nagyobb területû célobjektumot kapva eredményül. 
+	
+	
+	A kép túlzott összemosása miatt fontos objektumokat figyelmen kívül hagyhatunk, ami gondot okozhat. Ilyen gyakran elõfordul az arcokat tartalmazó képek esetén, annak ellenére, hogy az emberi arc fontos szerepet játszik az elkészített képekben. Az ilyen hibák elkerülése végett a képen egy arcdetektálást is végeztünk, hogy ezek mindenképp bekerüljenek a talált objektumok közé. A felfedezett arcokat nagyobb súllyal ellátva adtuk hozzá a fõobjektumok listájához.
+	
+	
+	A vonalak azonosítása is képfeldolgozó algoritmusok alkalmazásával valósítható meg. Elsõ körben Canny éldetektáló operátort \cite{OpenCV} használtunk, úgy, hogy elõtte nem mostuk különösebben össze a képet. A vonalak keresésekor fontos, hogy minél élesebb képpel dolgozzunk, ugyanis összemosás esetén értékes információt veszíthetünk, ezért elõfordulhat, hogy bizonyos vonalak nem lesznek megtalálva. E lépés után egy Hough-féle vonaldetektáló algoritmust  alkalmaztuk. Ezt megfelelõen paraméterezve eredményül meg is kaptuk a képben fellelhetõ vonalak halmazát. Ez azonban igen sok vonalat hajlamos magába foglalni, ami az értékelõ algoritmusra nézve nem elõnyös, túl sok számítást vonhat maga után, ami idõigényessé teheti az egész folyamatot. Ennek elkerülése érdekében a vonalak közül csak az elsõ n darab, legnagyobb súllyal rendelkezõ vonalat tartottuk meg. Egy vonal minél hosszabb, annál nagyobb a súlya.  
+	
+	
+	Az általános vonalak mellett számon kellett tartanunk az átlóhoz közel esõ vonalakat is. Az átló közeliséget nem a vonal pozíciójára értjük, hanem arra, hogy mennyire áll az átlókhoz hasonló szögben. Az átlók szögéhez viszonyítva 10o-os eltérést engedünk meg. Az átlós vonalak listáját az átlódominancia szabály vizsgálata miatt kellett eltárolnunk. 
+	
+	
+	Ismerve a fõobjektumokat és vonalakat, egy olyan 0 és 1 közötti értéket definiálhatunk, mely kellõképpen mutatja, hogy egy kép milyen szinten tartja be a fent említett szabályokat.
+	
+	 
+	A dolgozatban használt szimbólumok jelentései a  \ref{table:szimbolum} ábrán fel vannak tüntetve. Az algoritmusainkban a távolság alatt a hagyományos két pont közötti távolság helyett mindig a normalizált Manhattan távolságot értjük, melyet a következõképpen definiálhatunk : $ d_M ((x_1,y_1 ),(x_2,y_2 ) )=|x_1-x_2 |/w+ |y_1-y_2 |/h , illetve d_L (L,M)$ nem más, mint két vonal, L és M közti távolság. Két vonal közötti távolságot úgy számoljuk ki, hogy L két végpontjától kiszámítjuk az M legközelebbi pontjához mért Manhattan távolságát, majd ezt átlagoljuk.
+	
+\begin{figure}[h]
+
+\centering
+  {}
+\begin{center}
+\begin{tabular}{|| c | c ||}
+	\hline
+	\hline
+	 \textbf{Szimbólum} & \textbf{Jelentése}\\ 
+ 	\hline
+ 	$w, h$ & a kép szélessége és hosszúsága\\  
+ 	$C$ & a kép középpontja\\    
+  	$G_{i}, i = 1,2,3,4$ & a négy súlypont\\    
+   	$R_{i}, i = 1,2,3,4$ & a négy harmadvonal\\    
+    	$S_{i}, i = 1,2,..,n$ & a detektált objektumok\\    
+     	$C(S_{i}), I(S_{i})$ & az objektum középpontja és súlya\\    
+      	$r(S_{i})$ & objektum méret - képméret arány\\    
+       	$Q_{1}, Q_{2}$ & az átlók\\    
+        	$L_{i}, i = 1,2,..,n$ & a detektált vonalak\\    
+         	$X$ & átlós vonalak halmaza\\    
+          $\bar{X}$ & nem átlós vonalak halmaza\\    
+          $I(L_{i})$ & a vonal súlya\\    
+          $d_{M}$ & normalizált Manhattan távolság\\    
+          $d_{LM}$ & két vonal közötti távolság\\   
+          \hline
+          \hline
+\end{tabular}
+\end{center}
+\caption[1tablazat]{A képletekben használt szimbólumok}
+\label{table:szimbolum}
+\end{figure}
+
+	$I(S_i)$  alatt az aktuális, i-edik objektum súlyát értjük, ami nem más, mint az objektum területe, míg $I(L_i)$  az i-edik vonal súlya, azaz ennek a hossza. $\bar{X}$ az összes átlagos vonalat jelöli, míg $X$ az összes átlós vonalat, azaz azon vonalakat melyek legfeljebb $10^{o}$-ban térnek el a $Q_1$  és $Q_2$ által jelölt átlók valamelyikétõl.
+	
+	\textbf{A harmadolás szabály (Rule of Thirds, RT)} kiszámítása két fõ komponensbõl tevõdik össze : $ E_{Point}$ a célobjektumoknak a súlypontoktól mért távolságát méri, míg az $ E_{Line}$ a vonalaknak a harmadvonalaktól mért távolságát tükrözi. A képletben szereplõ $\gamma_{Point}$ és $\gamma_{Line}$ súlyok. Az összképlet ezen komponensekbõl a következõ képpen épül fel \cite{Liu10}: $$ E_{RT}= \gamma _{Point}E_{Point}+\gamma _{Line}E_{Line}.$$ A pont értéke az összes célobjektumnak : $$ E_{Point}= \frac{1}{\sum_{i} I(S_{i}))}\sum_{i}I(S_{i})e^{-\frac{D^{2}S_{i}}{2\sigma _{2}}},$$ ahol $ D(S_i)$  az aktuális célobjektumnak a négy, súlyponthoz mért minimális távolságát jelenti, $D(S_i) = min_{j=1,2,3,4} d_M (C(S_i), G_j) $, illetve $\sigma _{2}$ konstans egyenlõ 0.17 
+	
+A vonal értéke az összes megtalált, nem átlós vonalnak : $$ E_{Line}= \frac{1}{\sum_{i\in \bar{X}} I(L_{i}))}\sum_{i\in \bar{X}}I(L_{i})e^{-\frac{D_{R}^{2}L_{i}}{2\sigma _{1}}},$$ ahol $D_R (L_i)$ a minimum vonaltávolság az aktuális vonaltól a négy harmadvonalhoz mérve, $D_R (L_i) = min_{j=1,2,3,4}d_L (L_i, R_j)$  illetve a $\sigma_2$ konstans egyenlõ 0.17 .	
+
+
+Kísérletek azt bizonyították, hogy a vonalak nagyobb szerepet játszanak az esztétikai érték kialakulásában, ezért nálunk is nagyobb súlyt kap a vonalérték. Ennek megfelelõen a képletben szereplõ $\gamma_{Point}=1/3$ , míg a $\gamma_{Line}=2/3$-nak választottuk meg.
+
+
+\textbf{A vizuális egyensúly (Visual Balance, VB)} -ról akkor beszélhetünk, ha a célobjektumok összességének középpontja közel található a képnek a középpontjához. Ennek megfelelõen a vizuális egyensúly értékének kiszámítása \cite{Liu10}: $$E_{VB}= e^{-\frac{d_{VB}^{2}}{2\sigma _{3}}},$$ ahol $d_{VB}= d_{_{M}}(C, \frac{1}{\sum_{i}I(S_{i})}\sum_{i}I(S_{i})C(S_{i})), s \sigma _{3} =  0.2$.
+
+
+\textbf{Az átlódominancia szabály (Diagonal Dominance, DD)} értékének kiszámítása a vonalérték kiszámításához teljesen hasonló módon történik, annyi különbséggel, hogy itt csak az átlós vonalakkal dolgozunk. Ennek megfelelõen \cite{Liu10}:  $$E_{DD}= \frac{1}{\sum_{i\in X}I(L_{i})}\sum_{i\in X} I(L_{i})e^{-\frac{D_{Q}^{2}L_{i}}{2\sigma _{2}}},$$ ahol $D_{Q}(L_{i}) = \min(d_{L}(L_{i}, Q_{1}),d_{L}(L_{i}, Q_{2}))$.
+
+\textbf{Az esztétikai érték függvény (Aesthetic score function, A)} a fennebb említett szabályok által kiszámított értékek kombinációja \cite{Liu10}: $$E_{A}=\frac{\varpi _{RT}E_{_RT}+\varpi _{VB}E_{_VB}+\varpi _{DD}E_{_DD}}{\varpi _{RT}+\varpi _{VB}+\varpi _{DD}},$$ ahol $\varpi _{RT} = 1.0,  \varpi _{VB} = 0.3,  \varpi _{DD} = 1.0$.
+
+
+\textbf{A célobjektum mérete (Salient-region Sizes, SS)} is fontos tényezõ az összetett esztétikai érték számolásában. Olyan esetben, amikor egy képen csak egy szabályt ismerünk fel, a fent említett összefüggés nem írja le elég pontosan az adott kép esztétikai értékét. Elõfordulhat, hogy az adott kép több részképe megegyezõ esztétikai értéket kap, ezáltal nem lehet objektíven eldönteni azt, hogy melyik a legsikeresebb ezen képrészletek közül. Példának okáért vegyük azt az esetet, amikor a kép csak egy célobjektumot tartalmaz, akkor azt a négy súlypontra helyezve ugyanazt az esztétikai értéket kapnánk. Ez gondot okozhat. Ennek elkerülése érdekében vezettük be a célobjektum vagy célobjektumok méretét, mint értékelési szempontot. 
+
+
+Esztétikus képek tanulmányozása során észrevehetõ, hogy a célobjektumok három csoportba sorolhatóak : kis, közepes és nagy méretûek. A dolgozatban elõnyben részesítjük azon objektumokat, melyek ezt az eloszlást követik. A három méretnek az alábbi arányok felelnek meg: $r_1=0.1$, $r_2=0.56$ és $r_3=0.82$. Az áltlunk használt méret-függvény az ehhez konvergáló arányokat támogatja \cite{Liu10}: $$E_{SS}=\sum_{i} \max_{j=1,2,3}e^{-\frac{(r(S_{i})-r_{j})^{2})}{2\tau _{_{j}}}},$$ ahol $\tau_{1}=0.07, \tau_{2}=0.2 , s \tau_{3}=0.16$, illetve $r_{1}=0.1, r_{2}=0.56 , s r_{3}=0.82$.
+
+
+\textbf{Az összetett esztétikai érték (Combined Aesthetic Score)}  a kiszámított $E_A$  és $E_{SS}$ értékekbõl tevõdik össze \cite{Liu10}: $$E = (1-\omega_{SS} )E_{A}+ \omega_{SS}E_{SS},$$ ahol $\omega_{SS}=0.08$, ez az érték azért olyan kicsi, mivel a hangsúly az esztétikai értéken van, a célobjektum mérete csak másodlagos, a határozatlan esetek elkerülése végett lett beépítve a rendszerbe.
+
+
+Elvégezve az objektumokat azonosító lépéseket, illetve alkalmazva a fent említett képleteket, eredményül egy 0.0 és 1.0 közötti értéket kapunk. Optimális esetben a kép esztétikai értéke 1.0 lenne, ez a gyakorlatban 100\% - nak felelne meg.
+
+
+
+
+
+
+
+
+
+
+
+

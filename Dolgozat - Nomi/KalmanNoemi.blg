@@ -1,0 +1,46 @@
+This is BibTeX, Version 0.99dThe top-level auxiliary file: KalmanNoemi.aux
+A level-1 auxiliary file: bevezeto.aux
+A level-1 auxiliary file: szabalyok.aux
+A level-1 auxiliary file: beepitett.aux
+A level-1 auxiliary file: megvalositas.aux
+A level-1 auxiliary file: alkalmazas.aux
+A level-1 auxiliary file: esettan.aux
+A level-1 auxiliary file: kovetkeztetes.aux
+The style file: abbrvnat_hu.bst
+Database file #1: biblio.bib
+I was expecting a `,' or a `}'---line 42 of file biblio.bib
+ :   
+ :   URL =   "http://docs.opencv.org/3.2.0"
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+I was expecting a `,' or a `}'---line 47 of file biblio.bib
+ :   
+ :   URL =   "http://docs.opencv.org/trunk/d7/d4d/tutorial_py_thresholding.html"
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+I was expecting a `,' or a `}'---line 52 of file biblio.bib
+ :   
+ :   URL =   "http://docs.opencv.org/3.1.0/da/d22/tutorial_py_canny.html"
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+I was expecting a `,' or a `}'---line 57 of file biblio.bib
+ :   
+ :   URL =   "http://docs.opencv.org/3.0-beta/modules/imgproc/doc/filtering.html"
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+I was expecting a `,' or a `}'---line 83 of file biblio.bib
+ :   
+ :   URL =   "https://en.wikipedia.org/wiki/Genetic_algorithm"
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+Warning--to sort, need author or key in Canny
+Warning--to sort, need author or key in OpenCV
+Warning--to sort, need author or key in Threshold
+Warning--empty year in Canny
+Warning--empty year in OpenCV
+Warning--empty year in Threshold
+Warning--empty year in Dekan
+Warning--empty year in OCaroll
+Warning--empty year in Peterson
+Warning--empty year in Rowse
+(There were 5 error messages)
